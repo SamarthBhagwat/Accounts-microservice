@@ -1,9 +1,12 @@
 package com.example.bankapplication.accounts.service.impl;
 
+import com.example.bankapplication.accounts.dto.AccountDto;
 import com.example.bankapplication.accounts.dto.CustomerDto;
 import com.example.bankapplication.accounts.entity.Account;
 import com.example.bankapplication.accounts.entity.Customer;
 import com.example.bankapplication.accounts.exception.CustomerAlreadyExistsException;
+import com.example.bankapplication.accounts.exception.ResourceNotFoundException;
+import com.example.bankapplication.accounts.mapper.AccountMapper;
 import com.example.bankapplication.accounts.mapper.CustomerMapper;
 import com.example.bankapplication.accounts.repository.AccountRepository;
 import com.example.bankapplication.accounts.repository.CustomerRepository;
@@ -24,6 +27,12 @@ public class AccountServiceImpl implements IAccountService {
     @Autowired
     AccountRepository accountRepository;
 
+    @Autowired
+    CustomerMapper customerMapper;
+
+    @Autowired
+    AccountMapper accountMapper;
+
     @Override
     public void createAccount(Customer customer) {
         String email = customer.getEmail();
@@ -36,6 +45,20 @@ public class AccountServiceImpl implements IAccountService {
             Account account = createDefaultAccountObject(createdCustomer.getCustomerId());
             accountRepository.save(account);
         }
+    }
+
+    @Override
+    public CustomerDto fetchAccountDetails(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        Account account = accountRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+        );
+        CustomerDto customerDto = customerMapper.mapCustomerToCustomerDto(customer);
+        AccountDto accountDto = accountMapper.mapAccountToAccountDto(account);
+        customerDto.setAccountInfo(accountDto);
+        return customerDto;
     }
 
     private static Account createDefaultAccountObject(Long customerId){

@@ -18,4 +18,6 @@ public class CustomerDto {
 
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digit")
     private String mobileNumber;
+
+    private AccountDto accountInfo;
 }
