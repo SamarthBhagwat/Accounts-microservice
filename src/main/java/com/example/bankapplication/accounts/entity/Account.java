@@ -8,8 +8,8 @@ import lombok.*;
 @Entity
 public class Account extends BaseEntity{
     @Id
-    private String accountNumber;
-    private int customerId;
+    private Long accountNumber;
+    private Long customerId;
     private String accountType;
     private String branchAddress;
 }
