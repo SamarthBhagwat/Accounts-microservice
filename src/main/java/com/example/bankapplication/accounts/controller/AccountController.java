@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+
 @RestController
 @RequestMapping(value = "/api")
 @Validated
@@ -45,5 +46,37 @@ public class AccountController {
                                                                String mobileNumber){
         CustomerDto customerDto = accountService.fetchAccountDetails(mobileNumber);
         return new ResponseEntity<>(customerDto, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto){
+        boolean isUpdated = accountService.updateAccountDetails(customerDto);
+        if(isUpdated){
+            ResponseDto successResponse = new ResponseDto(HttpStatus.OK.toString(),
+                    "Account information updated Successfully");
+            return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(new ResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Internal Server error") ,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam
+                                                                @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digit")
+                                                            String mobileNumber){
+        boolean isDeleted = accountService.deleteAccountDetails(mobileNumber);
+        if(isDeleted){
+            ResponseDto successResponse = new ResponseDto(HttpStatus.OK.toString(),
+                    "Account information deleted Successfully");
+            return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(new ResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Internal Server error") ,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

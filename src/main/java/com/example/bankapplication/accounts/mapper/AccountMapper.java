@@ -14,4 +14,19 @@ public class AccountMapper {
         accountDto.setBranchAddress(account.getBranchAddress());
         return accountDto;
     }
+
+    public Account mapAccountDtoToAccount(AccountDto accountDto){
+        Account account = new Account();
+        account.setAccountNumber(accountDto.getAccountNumber());
+        account.setAccountType(accountDto.getAccountType());
+        account.setBranchAddress(accountDto.getBranchAddress());
+        return account;
+    }
+
+    public Account mapAccountDtoToAccount(AccountDto accountDto, Account account){
+        account.setAccountNumber(accountDto.getAccountNumber());
+        account.setAccountType(accountDto.getAccountType());
+        account.setBranchAddress(accountDto.getBranchAddress());
+        return account;
+    }
 }
