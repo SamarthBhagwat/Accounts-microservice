@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,10 +32,16 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     @Autowired
-    CustomerMapper customerMapper;
+    private CustomerMapper customerMapper;
 
-    @Autowired
-    IAccountService accountService;
+    private final IAccountService accountService;
+
+    public AccountController(IAccountService iAccountService){
+        this.accountService = iAccountService;
+    }
+
+    @Value("${build.info}")
+    private String buildInfo;
 
     @Operation(
             summary = "Test api",
@@ -145,5 +152,18 @@ public class AccountController {
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    @Operation(
+            summary = "Fetch build version",
+            description = "REST API to fetch build version of accounts microservice"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/build-info")
+    public ResponseEntity<String> fetchBuildInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(buildInfo);
     }
 }
