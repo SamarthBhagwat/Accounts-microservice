@@ -1,5 +1,6 @@
 package com.example.bankapplication.accounts.controller;
 
+import com.example.bankapplication.accounts.dto.ContactDetailsDto;
 import com.example.bankapplication.accounts.dto.CustomerDto;
 import com.example.bankapplication.accounts.dto.ErrorResponseDto;
 import com.example.bankapplication.accounts.dto.ResponseDto;
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,9 +33,6 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class AccountController {
 
-    @Autowired
-    private CustomerMapper customerMapper;
-
     private final IAccountService accountService;
 
     public AccountController(IAccountService iAccountService){
@@ -42,6 +41,15 @@ public class AccountController {
 
     @Value("${build.info}")
     private String buildInfo;
+
+    @Autowired
+    private CustomerMapper customerMapper;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private ContactDetailsDto contactDetailsDto;
 
     @Operation(
             summary = "Test api",
@@ -165,5 +173,33 @@ public class AccountController {
     @GetMapping("/build-info")
     public ResponseEntity<String> fetchBuildInfo(){
         return ResponseEntity.status(HttpStatus.OK).body(buildInfo);
+    }
+
+
+    @Operation(
+            summary = "Fetch java version which accounts microservice is using",
+            description = "REST API to fetch java version of accounts microservice"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/java-version")
+    public ResponseEntity<String> fetchJavaVersion(){
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("JAVA_VERSION"));
+    }
+
+
+    @Operation(
+            summary = "Fetch contact details",
+            description = "REST API to fetch contact details of accounts microservice maintainer"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/contact-info")
+    public ResponseEntity<ContactDetailsDto> fetchContactInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(contactDetailsDto);
     }
 }
